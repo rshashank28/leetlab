@@ -4,13 +4,14 @@ import { Toaster } from "react-hot-toast";
 
 import HomePage from "./page/HomePage";
 import LoginPage from "./page/LoginPage";
-import SignUpPage from "./page/SignUpPage";
+import SignupPage from "./page/SignupPage";
 import { useAuthStore } from "./store/useAuthStore";
 import { Loader } from "lucide-react";
 import Layout from "./layout/Layout";
 import AdminRoute from "./components/AdminRoute";
 import AddProblem from "./page/AddProblem";
 import ProblemPage from "./page/ProblemPage";
+import ProfilePage from "./page/ProfilePage";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -45,13 +46,15 @@ const App = () => {
 
         <Route
           path="/signup"
-          element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />}
+          element={!authUser ? <SignupPage /> : <Navigate to={"/"} />}
         />
 
         <Route
           path="/problem/:id"
           element={authUser ? <ProblemPage /> : <Navigate to={"/login"} />}
         />
+
+        <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />} />
 
         <Route element={<AdminRoute />}>
           <Route

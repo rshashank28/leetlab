@@ -11,6 +11,7 @@ export const createProblem = async (req, res) => {
     try {
         // Validate all reference solutions
         for(const[language,solutionCode] of Object.entries(referenceSolutions)){
+            if(language.toUpperCase() === 'JAVA') continue;
             const languageId = getJudge0LanguageId(language)
             if(!languageId) {
                 console.error(`createProblem 400: Invalid language: ${language}`);
@@ -60,7 +61,11 @@ export const createProblem = async (req, res) => {
 
 export const getAllProblems = async (req, res) => {
     try {
-        const problems = await db.problem.findMany();
+	const problems = await db.problem.findMany({
+    include:{
+        solvedBy: true
+    }
+});
         if(!problems) return res.status(404).json({error:"No problems found"});
         return res.status(200).json({
             success:true,

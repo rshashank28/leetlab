@@ -28,12 +28,12 @@ export const register = async (req, res) => {
         });
 
         const token= jwt.sign({id:newUser.id},process.env.JWT_SECRET,{expiresIn:"7d"});
-        res.cookie("jwt",token,{
-            httpOnly:true,
-            secure:process.env.NODE_ENV!=="development",
-            sameSite:"strict",
-            maxAge:7*24*60*60*1000
-        });
+      	res.cookie("jwt",token,{
+    httpOnly:true,
+    secure:false,
+    sameSite:"lax",
+    maxAge:7*24*60*60*1000
+});
         res.status(200).json({
             success:true,
             message:"User registered successfully",
@@ -73,11 +73,11 @@ export const login = async (req, res) => {
 
         const token= jwt.sign({id:user.id},process.env.JWT_SECRET,{expiresIn:"7d"});
         res.cookie("jwt",token,{
-            httpOnly:true,
-            secure:process.env.NODE_ENV!=="development",
-            sameSite:"strict",
-            maxAge:7*24*60*60*1000
-        });
+    httpOnly:true,
+    secure: true,
+sameSite: "lax",
+    maxAge:7*24*60*60*1000
+});
         res.status(200).json({
            
             success: true,
@@ -101,10 +101,10 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         res.clearCookie("jwt",{
-            httpOnly:true,
-            secure:process.env.NODE_ENV!=="development",
-            sameSite:"strict",
-        });
+    httpOnly:true,
+    secure: true,
+sameSite: "lax",
+});
         res.status(200).json({
             success: true,
             message: "User logged out successfully" 

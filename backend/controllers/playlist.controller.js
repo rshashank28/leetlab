@@ -56,10 +56,10 @@ export const getPlayListDetails=async(req,res)=>{
 
 export const addProblemToPlaylist=async(req,res)=>{
     const {playlistId}=req.params;
-    const {problemId}=req.body;
+    const {problemIds: problemId}=req.body;
     try {
         if(!Array.isArray(problemId)||problemId.length===0) return res.status(400).json({error:"Problem id is required"});
-        const problemsInPlayList = await db.problemInPlaylist.createMany({data:problemId.map((problemId)=>({playlistId,problemId}))});
+        const problemsInPlayList = await db.problemInPlaylist.createMany({data:problemId.map((problemId)=>({playListId: playlistId, problemId}))});
         res.status(200).json({success:true,problemsInPlayList,message:"Problem added to playlist successfully"});
         
     } catch (error) {
@@ -83,7 +83,7 @@ export const deletePlaylist=async(req,res)=>{
 
 export const removeProblemFromPlaylist=async(req,res)=>{
     const {playlistId}=req.params;
-    const {problemId}=req.body;
+    const {problemIds: problemId}=req.body;
     try {
         if(!Array.isArray(problemId)||problemId.length===0) return res.status(400).json({error:"Problem id is required"});
         const problemsInPlayList = await db.problemInPlaylist.deleteMany({where:{playlistId,problemId:{in:problemId}}});
