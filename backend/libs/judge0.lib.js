@@ -9,36 +9,52 @@ export const getJudge0LanguageId = (language) => {
     return languageMap[language.toUpperCase()]
     }
 
-      export const pollBatchResults = async (tokens) => {
+		export const pollBatchResults = async (tokens) => {
     let attempts = 0;
-    const maxAttempts = 20;
+    const maxAttempts = 30;
     while(attempts < maxAttempts){
         attempts++;
-        await sleep(2000);
-        const {data} = await axios.get(`${process.env.JUDGE0_API_URL}/submissions/batch`,{
-            params:{
-                tokens:tokens.join(","),
-                base64_encoded:false,
-            },
-            timeout: 10000
-        });
-        const results = data.submissions;
-        const isAllDone = results.every(
-            (r) => r.status.id !== 1 && r.status.id !== 2
-        );
-        if(isAllDone){
-            return results;
+        await sleep(3000);
+        try {
+            const {data} = await axios.get(`${process.env.JUDGE0_API_URL}/submissions/batch`,{
+                params:{
+                    tokens:tokens.join(","),
+                    base64_encoded:false,
+                },
+                timeout: 15000
+            });
+            const results = data.submissions;
+            const isAllDone = results.every(
+                (r) => r.status.id !== 1 && r.status.id !== 2
+            );
+            if(isAllDone){
+                return results;
+            }
+        } catch(err) {
+            console.log('Polling error, retrying...', err.code);
+            await sleep(2000);
         }
     }
-    throw new Error("Polling timeout - Judge0 took too long");
-}
-       export const submitBatch = async (submissions) => {
-        const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`,{
-            submissions
-        });
-        console.log(data);
-        return data
+    throw new Error("Polling timeout");
+}      
+
+       
+           export const submitBatch = async (submissions) => {
+    let attempts = 0;
+    while(attempts < 3) {
+        try {
+            const {data} = await axios.post(`${process.env.JUDGE0_API_URL}/submissions/batch?base64_encoded=false`, {
+                submissions
+            }, { timeout: 30000 });
+            console.log(data);
+            return data;
+        } catch(err) {
+            attempts++;
+            if(attempts >= 3) throw err;
+            await sleep(2000);
+        }
     }
+}
 
     export const getLanguageName = (languageId) => {
         const LANGUAGE_NAMES={
