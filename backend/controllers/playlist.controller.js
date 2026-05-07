@@ -86,7 +86,7 @@ export const removeProblemFromPlaylist=async(req,res)=>{
     const {problemIds: problemId}=req.body;
     try {
         if(!Array.isArray(problemId)||problemId.length===0) return res.status(400).json({error:"Problem id is required"});
-        const problemsInPlayList = await db.problemInPlaylist.deleteMany({where:{playlistId,problemId:{in:problemId}}});
+        const problemsInPlayList = await db.problemInPlaylist.deleteMany({where:{playListId:playlistId,problemId:{in:problemId}}});
         res.status(200).json({success:true,problemsInPlayList,message:"Problem removed from playlist successfully"});
         
     } catch (error) {

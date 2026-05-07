@@ -51,7 +51,7 @@ export const executeCode = async (req, res) => {
             userId,
             sourceCode: source_code,
             language:getLanguageName(language_id),
-            stdin: sdin.join("\n"),
+            stdin: stdin.join("\n"),
             stdout: JSON.stringify(detailedResults.map((res) => res.stdout)),
             stderr: detailedResults.some((res) => res.stderr)? JSON.stringify(detailedResults.map((res) => res.stderr)):null,
             compileOutput: detailedResults.some((res) => res.compile_output)? JSON.stringify(detailedResults.map((res) => res.compile_output)):null,
@@ -63,7 +63,7 @@ export const executeCode = async (req, res) => {
 
     //if all passed = true mark problem as solved for the current user 
     if(allPassed){
-        await db.problem.upsert({
+        await db.problemSolved.upsert({
             where:{
                 userId_problemId:{userId,problemId}
             },
@@ -77,11 +77,12 @@ export const executeCode = async (req, res) => {
     // save individual test case results
     const testCaseResults = detailedResults.map((result) => ({
         submissionId: submission.id,
-        testCase: result.testCase,
+        testCase: result.testCaseIndex,
         passed: result.passed,
         stdout: result.stdout,
         stderr: result.stderr,
         compileOutput: result.compile_output,
+        expexted: result.expexted,
         status: result.status,
         memory: result.memory,
         time: result.time
